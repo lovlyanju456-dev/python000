@@ -8,3 +8,16 @@
 # if cpu_hours>100:
 #     print(total_amount+500)  code 4
 
+
+uptime=97.5
+bill=50000
+if uptime>=99.9:
+refund = 0
+ 
+else uptime>=98:
+
+refund =bill*0.10
+else:
+refund =bill*0.25
+print("refund amount",refund)
+
