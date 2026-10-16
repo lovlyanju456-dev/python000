@@ -9,26 +9,32 @@
 #     bill=100*1+100*2+(units-200)*5
 #     print("electricity bill:rs",bill) code 4
 
-a=int(input("enter first angle:"))
-b=int(input("enter second angle:"))
-c=int(input("enter third angle:"))
+# age = int(input("enter age"))
+# if age>=18:
+#     print("allowed for match")
+#     if age>=18 and age<30:
+#         print("2$ ticket price")
+#     elif age>=30 and age<60:
+#         print("1$ ticket price")
+#     else:
+#         print("0$ ticket price")
+# else: 
+#         print("not allowed for match") code 5
 
-if a==b and b==c and c==a:
-    print("Equilateral Triangle")
+# weight = float(input("enter weight in kg:"))
+# height = float(input("enter height in meters:"))
+# BMI = weight/(height**2)
+# if BMI<18.5: 
+#     category = "under weight"
+# elif BMI<25:
+#     category = "normal weight"
+# elif BMI<30:
+#     category = "over weight"
+# else:
+#     category = "obese" 
+# print ("BMI:",BMI)     
+# print ("category:",category)  code 6
 
-elif a==b or b==c or c==a:
-    print("Isosceles Triangle")
 
-else:
-    print("Scalene Triangle")
 
-    age=int(input("enter age"))
-    if age>=18:
-        print("allowed for match")
-        if age>=18 and age<30:
-            print("2$ ticket price")
-        elif age>=30 and age<60:
-        print("1$ ticket price")
 
-    else:
-        print("")
