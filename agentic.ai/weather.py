@@ -1,45 +1,14 @@
-
 from flask import Flask, request, render_template_string
 import requests
 
 app = Flask(__name__)
 
-# Free weather API - no API key required
-GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
-WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
-
-WEATHER_CODES = {
-    0: "Clear Sky",
-    1: "Mainly Clear",
-    2: "Partly Cloudy",
-    3: "Overcast",
-    45: "Fog",
-    48: "Fog",
-    51: "Light Drizzle",
-    53: "Moderate Drizzle",
-    55: "Heavy Drizzle",
-    61: "Light Rain",
-    63: "Moderate Rain",
-    65: "Heavy Rain",
-    71: "Light Snow",
-    73: "Moderate Snow",
-    75: "Heavy Snow",
-    80: "Rain Showers",
-    81: "Moderate Rain Showers",
-    82: "Heavy Rain Showers",
-    95: "Thunderstorm",
-    96: "Thunderstorm with Hail",
-    99: "Heavy Thunderstorm"
-}
-
-# HTML and CSS are included inside this Python file.
 HTML = """
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>Weather App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeatherNow - Weather Report</title>
 
     <style>
         * {
@@ -48,193 +17,122 @@ HTML = """
 
         body {
             margin: 0;
-            padding: 30px 15px;
-            min-height: 100vh;
             font-family: Arial, sans-serif;
-            color: #172554;
-            background: linear-gradient(
-                135deg, #dbeafe, #eff6ff, #f8fafc
-            );
+            background: linear-gradient(135deg, #102a43, #247ba0);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
         }
 
         .container {
-            max-width: 850px;
-            margin: auto;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.13);
+            box-shadow: 0 10px 30px #102a4366;
         }
 
-        header {
+        h1, .subtitle {
             text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-size: 48px;
-        }
-
-        h1 {
-            margin: 8px 0;
-            font-size: 38px;
         }
 
         .subtitle {
-            color: #64748b;
-        }
-
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 22px;
-            box-shadow: 0 15px 45px rgba(37, 99, 235, 0.12);
-        }
-
-        form {
-            display: flex;
-            gap: 10px;
+            color: #d8e9f3;
+            margin-bottom: 25px;
         }
 
         input {
-            flex: 1;
-            min-width: 0;
-            padding: 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            margin: 10px 0 15px;
             font-size: 16px;
         }
 
         button {
-            padding: 15px 22px;
-            background: #2563eb;
-            color: white;
+            width: 100%;
+            padding: 14px;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
+            border-radius: 8px;
+            background: #ffcc70;
+            color: #17324d;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
         }
 
         button:hover {
-            background: #1d4ed8;
+            background: #ffd994;
         }
 
-        .error {
-            background: #fff1f2;
-            color: #be123c;
-            padding: 14px;
-            margin-top: 20px;
-            border-radius: 10px;
-        }
-
-        .report {
-            margin-top: 30px;
-        }
-
-        .location {
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .main-weather {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .condition {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #ffffff20;
+            border-radius: 12px;
+            text-align: center;
         }
 
         .temperature {
-            font-size: 65px;
+            font-size: 48px;
             font-weight: bold;
+            margin: 15px 0;
         }
 
-        .feels {
-            color: #64748b;
+        .condition {
+            font-size: 20px;
+            margin-bottom: 20px;
         }
 
-        .grid {
+        .details {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 25px;
         }
 
-        .metric {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 16px;
-            border-radius: 12px;
+        .detail {
+            padding: 12px 5px;
+            background: #ffffff20;
+            border-radius: 8px;
         }
 
-        .metric-label {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 10px;
-        }
-
-        .metric-value {
-            font-size: 18px;
+        .detail p {
             font-weight: bold;
-            overflow-wrap: anywhere;
         }
 
-        h3 {
-            margin-top: 28px;
-        }
-
-        .footer {
+        .error {
+            margin-top: 20px;
+            padding: 12px;
+            background: #ffe5e5;
+            color: #a40000;
+            border-radius: 8px;
             text-align: center;
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 22px;
-            line-height: 1.6;
         }
 
-        @media (max-width: 600px) {
-            .card {
-                padding: 20px;
-            }
-
-            form {
-                flex-direction: column;
-            }
-
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .temperature {
-                font-size: 48px;
-            }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #d8e9f3;
         }
     </style>
 </head>
 
 <body>
-<div class="container">
-
-    <header>
-        <div class="logo">🌤️</div>
-        <h1>WeatherNow</h1>
-        <p class="subtitle">
-            Get current weather reports for cities around the world.
-        </p>
-    </header>
-
-    <div class="card">
+    <div class="container">
+        <h1>Weather App</h1>
+        <p class="subtitle">Check the weather in your city</p>
 
         <form method="POST">
-            <input
-                type="text"
-                name="city"
-                placeholder="Enter city name, e.g. Bengaluru"
-                value="{{ city }}"
-                required
-            >
+            <label for="city">Enter City Name</label>
+            <input type="text" id="city" name="city"
+                   placeholder="Example: Tirupati"
+                   value="{{ city }}" required>
             <button type="submit">Get Weather</button>
         </form>
 
@@ -243,245 +141,121 @@ HTML = """
         {% endif %}
 
         {% if weather %}
-        <div class="report">
-
-            <div class="location">
-                CURRENT WEATHER · {{ weather.location }}
-            </div>
-
-            <div class="main-weather">
-                <div>
-                    <div class="condition">
-                        {{ weather.condition }}
-                    </div>
-                    <div class="feels">
-                        Feels like {{ weather.feels }}{{ weather.unit }}
-                    </div>
-                </div>
-
+            <div class="result">
+                <h2>{{ weather.city }}, {{ weather.country }}</h2>
                 <div class="temperature">
-                    {{ weather.temperature }}{{ weather.unit }}
+                    {{ weather.temperature }}°C
+                </div>
+                <div class="condition">{{ weather.condition }}</div>
+
+                <div class="details">
+                    <div class="detail">
+                        Feels Like
+                        <p>{{ weather.feels_like }}°C</p>
+                    </div>
+                    <div class="detail">
+                        Humidity
+                        <p>{{ weather.humidity }}%</p>
+                    </div>
+                    <div class="detail">
+                        Wind Speed
+                        <p>{{ weather.wind }} km/h</p>
+                    </div>
+                    <div class="detail">
+                        Weather
+                        <p>{{ weather.condition }}</p>
+                    </div>
                 </div>
             </div>
-
-            <h3>Weather Details</h3>
-
-            <div class="grid">
-
-                <div class="metric">
-                    <div class="metric-label">💧 Humidity</div>
-                    <div class="metric-value">
-                        {{ weather.humidity }}%
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">💨 Wind Speed</div>
-                    <div class="metric-value">
-                        {{ weather.wind }} km/h
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">☁️ Cloud Cover</div>
-                    <div class="metric-value">
-                        {{ weather.cloud }}%
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">🌧️ Precipitation</div>
-                    <div class="metric-value">
-                        {{ weather.precip }} mm
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">🔽 Today's Low</div>
-                    <div class="metric-value">
-                        {{ weather.low }}{{ weather.unit }}
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">🔺 Today's High</div>
-                    <div class="metric-value">
-                        {{ weather.high }}{{ weather.unit }}
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">🌦️ Rain Probability</div>
-                    <div class="metric-value">
-                        {{ weather.rain_chance }}%
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">🌅 Sunrise</div>
-                    <div class="metric-value">
-                        {{ weather.sunrise }}
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">🌇 Sunset</div>
-                    <div class="metric-value">
-                        {{ weather.sunset }}
-                    </div>
-                </div>
-
-            </div>
-
-            <p class="subtitle">
-                Local observation time: {{ weather.time }}
-            </p>
-        </div>
         {% endif %}
 
+        <footer>Weather data by Open-Meteo</footer>
     </div>
-
-    <div class="footer">
-        Weather data provided by Open-Meteo.<br>
-        Free API for non-commercial use. No API key required.
-    </div>
-
-</div>
 </body>
 </html>
 """
 
 
-def fetch_json(url, params):
-    response = requests.get(url, params=params, timeout=20)
-    response.raise_for_status()
-    return response.json()
-
-
-def get_weather(city):
-    # Find the city's latitude and longitude.
-    geo_data = fetch_json(
-        GEOCODING_URL,
-        {
-            "name": city,
-            "count": 1,
-            "language": "en",
-            "format": "json"
-        }
-    )
-
-    places = geo_data.get("results", [])
-
-    if not places:
-        raise ValueError(
-            "City not found. Please check the spelling and try again."
-        )
-
-    place = places[0]
-
-    # Get current weather and today's forecast.
-    data = fetch_json(
-        WEATHER_URL,
-        {
-            "latitude": place["latitude"],
-            "longitude": place["longitude"],
-            "current": (
-                "temperature_2m,"
-                "relative_humidity_2m,"
-                "apparent_temperature,"
-                "precipitation,"
-                "weather_code,"
-                "cloud_cover,"
-                "wind_speed_10m"
-            ),
-            "daily": (
-                "temperature_2m_max,"
-                "temperature_2m_min,"
-                "sunrise,"
-                "sunset,"
-                "precipitation_probability_max"
-            ),
-            "timezone": "auto",
-            "forecast_days": 1
-        }
-    )
-
-    current = data["current"]
-    daily = data["daily"]
-    units = data.get("current_units", {})
-
-    location_parts = [
-        place.get("name"),
-        place.get("admin1"),
-        place.get("country")
-    ]
-
-    location = ", ".join(
-        dict.fromkeys(part for part in location_parts if part)
-    )
-
-    rain_chance = daily.get(
-        "precipitation_probability_max", [0]
-    )[0]
-
-    return {
-        "location": location,
-        "condition": WEATHER_CODES.get(
-            current.get("weather_code"),
-            "Conditions unavailable"
-        ),
-        "temperature": current.get("temperature_2m", "N/A"),
-        "feels": current.get("apparent_temperature", "N/A"),
-        "unit": units.get("temperature_2m", "°C"),
-        "humidity": current.get("relative_humidity_2m", "N/A"),
-        "wind": current.get("wind_speed_10m", "N/A"),
-        "cloud": current.get("cloud_cover", "N/A"),
-        "precip": current.get("precipitation", "N/A"),
-        "low": daily.get("temperature_2m_min", ["N/A"])[0],
-        "high": daily.get("temperature_2m_max", ["N/A"])[0],
-        "rain_chance": (
-            rain_chance if rain_chance is not None else "N/A"
-        ),
-        "sunrise": daily.get("sunrise", ["N/A"])[0].split("T")[-1],
-        "sunset": daily.get("sunset", ["N/A"])[0].split("T")[-1],
-        "time": current.get("time", "N/A").replace("T", " ")
-    }
-
-
 @app.route("/", methods=["GET", "POST"])
 def home():
-    city = ""
     weather = None
     error = None
+    city = ""
 
     if request.method == "POST":
         city = request.form.get("city", "").strip()
 
-        if not city:
-            error = "Please enter a city name."
-        else:
-            try:
-                weather = get_weather(city)
-
-            except ValueError as exc:
-                error = str(exc)
-
-            except requests.RequestException:
-                error = (
-                    "Unable to connect to the weather service. "
-                    "Check your internet connection and try again."
+        try:
+            if not city:
+                error = "Please enter a city name."
+            else:
+                # Get city coordinates
+                geo = requests.get(
+                    "https://geocoding-api.open-meteo.com/v1/search",
+                    params={"name": city, "count": 1, "language": "en"},
+                    timeout=10
                 )
+                geo.raise_for_status()
+                results = geo.json().get("results", [])
 
-            except (KeyError, IndexError, TypeError):
-                error = (
-                    "Unable to read weather data. Please try again."
-                )
+                if not results:
+                    error = "City not found. Please try again."
+                else:
+                    location = results[0]
+
+                    # Get current weather
+                    response = requests.get(
+                        "https://api.open-meteo.com/v1/forecast",
+                        params={
+                            "latitude": location["latitude"],
+                            "longitude": location["longitude"],
+                            "current": (
+                                "temperature_2m,relative_humidity_2m,"
+                                "apparent_temperature,wind_speed_10m,"
+                                "weather_code"
+                            )
+                        },
+                        timeout=10
+                    )
+                    response.raise_for_status()
+                    current = response.json()["current"]
+
+                    code = current["weather_code"]
+
+                    if code == 0:
+                        condition = "Clear Sky"
+                    elif code in (1, 2, 3):
+                        condition = "Partly Cloudy"
+                    elif code in (45, 48):
+                        condition = "Foggy"
+                    elif code in (51, 53, 55, 56, 57):
+                        condition = "Drizzle"
+                    elif code in (61, 63, 65, 66, 67, 80, 81, 82):
+                        condition = "Rainy"
+                    elif code in (71, 73, 75, 77, 85, 86):
+                        condition = "Snowy"
+                    elif code in (95, 96, 99):
+                        condition = "Thunderstorm"
+                    else:
+                        condition = "Variable Conditions"
+
+                    weather = {
+                        "city": location["name"],
+                        "country": location.get("country", ""),
+                        "temperature": current["temperature_2m"],
+                        "feels_like": current["apparent_temperature"],
+                        "humidity": current["relative_humidity_2m"],
+                        "wind": current["wind_speed_10m"],
+                        "condition": condition
+                    }
+
+        except requests.RequestException:
+            error = "Unable to connect. Check your internet connection."
+        except (KeyError, ValueError, TypeError):
+            error = "Unable to retrieve weather data. Try again."
 
     return render_template_string(
-        HTML,
-        city=city,
-        weather=weather,
-        error=error
+        HTML, weather=weather, error=error, city=city
     )
 
 
