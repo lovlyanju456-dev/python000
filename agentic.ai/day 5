@@ -35,6 +35,9 @@
 # print ("BMI:",BMI)     
 # print ("category:",category)  code 6
 
+Password = input("enter your password: ")
+alpha = ""
+digit
 
 
 
