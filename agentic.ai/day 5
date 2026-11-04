@@ -50,6 +50,32 @@
 #             print("Password is valid")
 #         else:
 #             print("Password is invalid") code 10
+import time
+lst = [1,2,23,55]
+start = time.time()
+print (23 in lst)
+end = time.time()
+print (end,start)
+
+import time
+tup = (1,2,3,55)
+start = time.time()
+print (23 in tup)
+end = time.time()
+print (end,start)
+
+import sys
+lst =[1,2,23,55]
+P = sys.getsizeof(lst)
+print(P)
+
+import sys
+tup =(1,2,23,55)
+P = sys.getsizeof(tup)
+print (P)
+
+
+
 
 
 
