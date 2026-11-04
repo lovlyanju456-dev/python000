@@ -35,9 +35,22 @@
 # print ("BMI:",BMI)     
 # print ("category:",category)  code 6
 
-Password = input("enter your password: ")
-alpha = ""
-digit
+# Password = input("enter your Password: ")
+# alpha = ""
+# digit = ""
+# special = ""
+# for ch in Password:
+#     if ch.isalpha():
+#         alpha+=ch
+#     elif ch.isdigit():
+#         digit+=ch
+#     else:
+#         special+=ch
+#         if len(digit)==2 and len(special)==1 and len(alpha)>=3:
+#             print("Password is valid")
+#         else:
+#             print("Password is invalid") code 10
+
 
 
 
