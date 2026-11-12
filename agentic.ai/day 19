@@ -3,3 +3,4 @@
 # geolocator = Nominatim(user_agent = "geoapi")
 # location = geolocator.reverse("12.97,77.59")
 # print ("Approx address:", location.address) code 20
+

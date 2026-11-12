@@ -1,0 +1,19 @@
+guests = ["Ravi", "Sita", "Ravi", "Amit", "Sita"]
+emp_list = ["Ravi"]
+guests = ["Ravi", "Sita", "Ravi", "Amit", "Sita"]
+emp_list = []
+
+for x in guests:
+    if x in emp_list:
+        pass
+    else:
+        emp_list.append(x)
+
+print(emp_list)
+
+guest = ["Ravi","Sita","Ravi", "Amit","Sita"]
+print (len(guest))
+print (len(set(guest)))
+
+
+
