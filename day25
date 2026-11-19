@@ -1,0 +1,6 @@
+# d = {"a":1 , "b":2, "c":3, "d":4}
+# x =  d.pop("b")
+# del d ["c"]
+# print (x)
+# print (d) code 23
+
