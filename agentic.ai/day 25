@@ -22,3 +22,59 @@
 # c1.start_engine()
 # c1.start_gear()
 # c1.accelerate()   code 25
+
+
+# Level 1: The Foundation Class
+class BasicPlayer:
+
+    def __init__(self, username):
+        self.username = username
+
+    def walk(self):
+        print(f"{self.username} is moving forward.")
+
+
+
+class Warrior(BasicPlayer):
+
+    def attack(self):
+        print(f"{self.username} swings a heavy sword!")
+
+
+
+class Paladin(Warrior):
+
+    def heal(self):
+        print(f"{self.username} uses divine light to heal the party!")
+
+
+
+hero = Paladin("Suresh_Hero")
+
+hero.walk()   
+hero.attack()  
+hero.heal()    
+
+# Parent 1: Handles visual data
+class ImageContent:
+    def apply_filter(self):
+        print("Applying 'Vintage' filter to the image...")
+
+# Parent 2: Handles written data
+class TextContent:
+    def check_grammar(self):
+        print("Scanning text for spelling errors...")
+
+# Child Class: Inherits from both parents
+class SocialMediaPost(ImageContent, TextContent):
+    def upload(self):
+        print("Post is now live on the feed!")
+
+# Usage
+my_post = SocialMediaPost()
+
+# Inherited from TextContent
+my_post.check_grammar()
+
+# Inherited from ImageContent
+my_post.apply_filter()
